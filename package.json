@@ -12,10 +12,9 @@
   },
   "license": "MIT",
   "author": "Isaac Muniz",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "next dev"
   },
   "dependencies": {
     "next": "^13.1.6",
