@@ -1,7 +1,7 @@
 {
   "name": "tabnews-clone",
   "version": "0.1.0",
-  "description": "Implementation of tabnews.com.br through curso.dev",
+  "description": "Implementation of tabnews.com.br for curso.dev",
   "homepage": "https://github.com/codigoisaac/tabnews-clone#readme",
   "bugs": {
     "url": "https://github.com/codigoisaac/tabnews-clone/issues"
