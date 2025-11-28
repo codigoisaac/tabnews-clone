@@ -7,4 +7,6 @@ test("GET /api/v1/status", async () => {
   expect(response.status).toBe(200);
   expect(responseBody.updated_at).toBeDefined();
   expect(responseBody.updated_at).toEqual(parsedUpdatedAt);
+
+  expect(responseBody.dependencies.database.version).toEqual("16.0");
 });
