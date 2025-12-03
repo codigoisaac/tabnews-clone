@@ -14,7 +14,7 @@ export default async function migrations(request, response) {
       migrationsTable: "pgmigrations",
     });
 
-    response.status(200).json(migrations);
+    return response.status(200).json(migrations);
   }
 
   if (request.method === "POST") {
@@ -27,8 +27,8 @@ export default async function migrations(request, response) {
       migrationsTable: "pgmigrations",
     });
 
-    response.status(200).json(migrations);
+    return response.status(200).json(migrations);
   }
 
-  response.status(405).end();
+  return response.status(405).end();
 }
