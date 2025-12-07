@@ -1,10 +1,14 @@
 import database from "infra/database";
+import orchestrator from "infra/scripts/orchestrator";
 
-beforeAll(cleanDatabase);
+beforeAll(async () => {
+  await orchestrator.waitForAllServices();
+  await cleanDatabase();
 
-async function cleanDatabase() {
-  await database.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
-}
+  async function cleanDatabase() {
+    await database.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
+  }
+});
 
 test("GET /migrations", async () => {
   const response = await fetch("http://localhost:3000/api/v1/migrations");
