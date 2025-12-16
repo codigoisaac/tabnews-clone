@@ -8,6 +8,7 @@ async function query(queryObject) {
     const result = await client.query(queryObject);
     return result;
   } catch (error) {
+    console.log("\nErro dentro do catch do databse.js:");
     console.error(error);
     throw error;
   } finally {
