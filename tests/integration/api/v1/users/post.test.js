@@ -36,5 +36,42 @@ describe("POST to api/v1/users", () => {
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
     });
+
+    test("With duplicated 'email'", async () => {
+      const response1 = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "email_duplicado1",
+          email: "duplicado@isaacmuniz.pro",
+          password: "senha123",
+        }),
+      });
+      expect(response1.status).toBe(201);
+
+      const response2 = await fetch("http://localhost:3000/api/v1/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: "email_duplicado2",
+          // same email with uppercase letters
+          email: "Duplicado@IsaacMuniz.Pro",
+          password: "senha123",
+        }),
+      });
+      expect(response2.status).toBe(400);
+
+      const response2Body = await response2.json();
+      expect(response2Body).toEqual({
+        name: "ValidationError",
+        message: "The email address provided is already in use.",
+        action: "Please use a different email to create your account.",
+        status_code: 400,
+      });
+    });
   });
 });

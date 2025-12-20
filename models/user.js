@@ -1,8 +1,36 @@
 import database from "infra/database.js";
+import { ValidationError } from "infra/errors.js";
 
 async function create(userInputValues) {
-  const result = await database.query({
-    text: `
+  await validadeUniqueEmail(userInputValues.email);
+
+  const newUser = await runInsertQuery(userInputValues);
+  return newUser;
+
+  async function validadeUniqueEmail(email) {
+    const result = await database.query({
+      text: `
+      SELECT
+        email
+      FROM
+        users
+      WHERE
+        LOWER(email) = LOWER($1)
+      ;`,
+      values: [email],
+    });
+
+    if (result.rowCount > 0) {
+      throw new ValidationError({
+        message: "The email address provided is already in use.",
+        action: "Please use a different email to create your account.",
+      });
+    }
+  }
+
+  async function runInsertQuery(userInputValues) {
+    const result = await database.query({
+      text: `
       INSERT INTO 
         users (username, email, password) 
       VALUES 
@@ -10,14 +38,15 @@ async function create(userInputValues) {
       RETURNING
         *
       ;`,
-    values: [
-      userInputValues.username,
-      userInputValues.email,
-      userInputValues.password,
-    ],
-  });
+      values: [
+        userInputValues.username,
+        userInputValues.email,
+        userInputValues.password,
+      ],
+    });
 
-  return result.rows[0];
+    return result.rows[0];
+  }
 }
 
 const userModel = { create };
