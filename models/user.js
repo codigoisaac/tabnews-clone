@@ -17,6 +17,8 @@ async function create(userInputValues) {
         users
       WHERE
         LOWER(email) = LOWER($1)
+      LIMIT
+        1
       ;`,
       values: [email],
     });
@@ -38,6 +40,8 @@ async function create(userInputValues) {
         users
       WHERE
         LOWER(username) = LOWER($1)
+      LIMIT
+        1
       ;`,
       values: [username],
     });
