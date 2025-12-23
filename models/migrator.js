@@ -2,15 +2,15 @@ import { resolve } from "node:path";
 import database from "infra/database.js";
 import { runner as migrationRunner } from "node-pg-migrate";
 
-export const defaultMigrationOptions = {
+const defaultMigrationOptions = {
   dryRun: true,
   dir: resolve("infra", "migrations"),
   direction: "up",
-  verbose: true,
+  log: () => {},
   migrationsTable: "pgmigrations",
 };
 
-export async function listPendingMigrations() {
+async function listPendingMigrations() {
   let dbClient;
 
   try {
