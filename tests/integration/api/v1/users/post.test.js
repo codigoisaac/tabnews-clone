@@ -1,5 +1,7 @@
 import orchestrator from "infra/scripts/orchestrator";
 import { version as uuidVersion } from "uuid";
+import user from "models/user.js";
+import password from "models/password.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -10,6 +12,7 @@ beforeAll(async () => {
 describe("POST to api/v1/users", () => {
   describe("Anonymous user", () => {
     test("With unique and valid data", async () => {
+      // Create user and test it's values
       const response = await fetch("http://localhost:3000/api/v1/users", {
         method: "POST",
         headers: {
@@ -28,13 +31,29 @@ describe("POST to api/v1/users", () => {
         id: responseBody.id,
         username: "isaac",
         email: "contato@isaacmuniz.pro",
-        password: "senha123",
+        password: responseBody.password,
         created_at: responseBody.updated_at,
         updated_at: responseBody.created_at,
       });
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      // Check if user's password was correctly hased
+      const userInDatabase = await user.findOneByUsername("isaac");
+
+      const correctPasswordMatch = await password.compare(
+        "senha123",
+        userInDatabase.password,
+      );
+
+      const incorrectPasswordMatch = await password.compare(
+        "senhaErrada",
+        userInDatabase.password,
+      );
+
+      expect(correctPasswordMatch).toBe(true);
+      expect(incorrectPasswordMatch).toBe(false);
     });
 
     test("With duplicated 'email'", async () => {
