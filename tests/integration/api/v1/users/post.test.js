@@ -32,8 +32,8 @@ describe("POST to api/v1/users", () => {
         username: "isaac",
         email: "contato@isaacmuniz.pro",
         password: responseBody.password,
-        created_at: responseBody.updated_at,
-        updated_at: responseBody.created_at,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
       });
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
@@ -88,7 +88,7 @@ describe("POST to api/v1/users", () => {
       expect(response2Body).toEqual({
         name: "ValidationError",
         message: "The email address provided is already in use.",
-        action: "Please use a different email to create your account.",
+        action: "Please use a different email.",
         status_code: 400,
       });
     });
@@ -125,7 +125,7 @@ describe("POST to api/v1/users", () => {
       expect(response2Body).toEqual({
         name: "ValidationError",
         message: "The username provided is already in use.",
-        action: "Please use a different username to create your account.",
+        action: "Please use a different username.",
         status_code: 400,
       });
     });
