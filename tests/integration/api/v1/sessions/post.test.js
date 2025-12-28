@@ -1,4 +1,6 @@
-import orchestrator from "infra/scripts/orchestrator";
+import { version as uuidVersion } from "uuid";
+import orchestrator from "infra/scripts/orchestrator.js";
+import session from "models/session.js";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -82,6 +84,45 @@ describe("POST to api/v1/sessions", () => {
         action: "Check if the data you submitted is correct.",
         status_code: 401,
       });
+    });
+
+    test("With correct 'email' and correct 'password'", async () => {
+      const createdUser = await orchestrator.createUser({
+        email: "all.correct@isaacmuniz.pro",
+        password: "allCorrect",
+      });
+
+      const response = await fetch("http://localhost:3000/api/v1/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "all.correct@isaacmuniz.pro",
+          password: "allCorrect",
+        }),
+      });
+      expect(response.status).toBe(201);
+
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        id: responseBody.id,
+        token: responseBody.token,
+        user_id: createdUser.id,
+        expires_at: responseBody.expires_at,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+      expect(uuidVersion(responseBody.id)).toBe(4);
+      expect(Date.parse(responseBody.expires_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const expiresAt = new Date(responseBody.expires_at);
+      const createdAt = new Date(responseBody.created_at);
+      expiresAt.setMilliseconds(0);
+      createdAt.setMilliseconds(0);
+      expect(expiresAt - createdAt).toBe(session.EXPIRATION_IN_MILLISECONDS);
     });
   });
 });
