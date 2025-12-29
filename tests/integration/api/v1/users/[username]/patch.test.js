@@ -96,7 +96,7 @@ describe("PATCH to api/v1/users/[username]", () => {
 
     test("With unique 'username'", async () => {
       // Create user
-      const createdUser = await orchestrator.createUser({});
+      const createdUser = await orchestrator.createUser();
 
       // Update user
       const response = await fetch(
@@ -130,7 +130,7 @@ describe("PATCH to api/v1/users/[username]", () => {
 
     test("With unique 'email'", async () => {
       // Create user
-      const createdUser = await orchestrator.createUser({});
+      const createdUser = await orchestrator.createUser();
 
       // Update user
       const response = await fetch(
@@ -164,7 +164,7 @@ describe("PATCH to api/v1/users/[username]", () => {
 
     test("With new 'password'", async () => {
       // Create user
-      const createdUser = await orchestrator.createUser({});
+      const createdUser = await orchestrator.createUser();
 
       // Update user
       const response = await fetch(
