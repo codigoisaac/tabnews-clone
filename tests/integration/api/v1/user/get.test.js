@@ -1,5 +1,6 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator.js";
+import session from "models/session";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -44,6 +45,35 @@ describe("GET to api/v1/user", () => {
       const response = await fetch("http://localhost:3000/api/v1/user", {
         headers: {
           Cookie: `session_id=${nonexistentToken}`,
+        },
+      });
+      expect(response.status).toBe(401);
+
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        name: "UnauthorizedError",
+        message: "User do not have an active session.",
+        action: "Verify if you are logged in and try again.",
+        status_code: 401,
+      });
+    });
+
+    test("With expired session", async () => {
+      jest.useFakeTimers({
+        now: new Date(Date.now() - session.EXPIRATION_IN_MILLISECONDS),
+      });
+
+      const createdUser = await orchestrator.createUser({
+        username: "UserWithExpiredSession",
+      });
+
+      const sessionObject = await orchestrator.createSession(createdUser.id);
+
+      jest.useRealTimers();
+
+      const response = await fetch("http://localhost:3000/api/v1/user", {
+        headers: {
+          Cookie: `session_id=${sessionObject.token}`,
         },
       });
       expect(response.status).toBe(401);
