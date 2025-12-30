@@ -21,7 +21,7 @@ async function create(userId) {
           ($1, $2, $3)
         RETURNING
           *
-      `,
+      ;`,
       values: [token, userId, expiresAt],
     });
 
@@ -47,7 +47,7 @@ async function findOneValidByToken(sessionToken) {
           expires_at > NOW()
         LIMIT
           1
-      `,
+      ;`,
       values: [sessionToken],
     });
 

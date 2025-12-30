@@ -159,7 +159,7 @@ async function update(username, userInputValues) {
           id = $1
         RETURNING
           *
-      `,
+      ;`,
       values: [
         userWithNewValues.id,
         userWithNewValues.username,
