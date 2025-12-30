@@ -1,4 +1,4 @@
-import orchestrator from "infra/scripts/orchestrator";
+import orchestrator from "tests/orchestrator.js";
 import password from "models/password";
 import { version as uuidVersion } from "uuid";
 
