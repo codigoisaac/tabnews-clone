@@ -36,5 +36,25 @@ describe("GET to api/v1/user", () => {
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
     });
+
+    test("With nonexistent session", async () => {
+      const nonexistentToken =
+        "883f4782ed6c87d7f30ab3351f4614591ddeb148ae73a214d9f05b848d53f4377c973559aba52e907263835ba5dc7a97";
+
+      const response = await fetch("http://localhost:3000/api/v1/user", {
+        headers: {
+          Cookie: `session_id=${nonexistentToken}`,
+        },
+      });
+      expect(response.status).toBe(401);
+
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        name: "UnauthorizedError",
+        message: "User do not have an active session.",
+        action: "Verify if you are logged in and try again.",
+        status_code: 401,
+      });
+    });
   });
 });
