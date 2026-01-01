@@ -1,6 +1,10 @@
 import orchestrator from "tests/orchestrator";
 import email from "infra/email";
 
+beforeAll(async () => {
+  await orchestrator.waitForAllServices();
+});
+
 describe("infra/email.js", () => {
   test("send()", async () => {
     await orchestrator.deleteAllEmails();
