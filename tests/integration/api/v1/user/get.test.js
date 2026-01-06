@@ -10,11 +10,28 @@ beforeAll(async () => {
 });
 
 describe("GET to api/v1/user", () => {
+  describe("Anonymous user", () => {
+    test("Retrieving the endpoint", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/user");
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+      expect(responseBody).toEqual({
+        name: "ForbiddenError",
+        message: "You don't have permission to execute this action.",
+        action: "You must gain the correct permissions for this.",
+        status_code: 403,
+      });
+    });
+  });
+
   describe("Default user", () => {
     test("With valid session", async () => {
       const createdUser = await orchestrator.createUser({
         username: "UserWithValidSession",
       });
+
+      const activatedUser = await orchestrator.activateUser(createdUser);
 
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
@@ -36,9 +53,9 @@ describe("GET to api/v1/user", () => {
         username: "UserWithValidSession",
         email: createdUser.email,
         password: createdUser.password,
-        features: ["read:activation_token"],
+        features: ["create:session", "read:session"],
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
       });
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
