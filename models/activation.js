@@ -3,6 +3,8 @@ import database from "infra/database";
 import webserver from "infra/webserver";
 import user from "./user";
 import { NotFoundError } from "infra/errors";
+import authorization from "./authorization";
+import { ForbiddenError } from "infra/errors";
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 15 * 1000; // 15 minutes
 
@@ -104,10 +106,20 @@ async function markTokenAsUsed(activationTokenId) {
 }
 
 async function activateUserByUserId(userId) {
+  const userToActivate = await user.findOneById(userId);
+
+  if (!authorization.can(userToActivate, "read:activation_token")) {
+    throw new ForbiddenError({
+      message: "You don't have permission to execute this action.",
+      action: "Contact support if you think this is a mistake.",
+    });
+  }
+
   const activatedUser = await user.setFeatures(userId, [
     "create:session",
     "read:session",
   ]);
+
   return activatedUser;
 }
 
